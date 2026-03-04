@@ -1,0 +1,14 @@
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="200dp"
+    android:height="200dp"
+    android:viewportWidth="200"
+    android:viewportHeight="200">
+    <!-- Blue Arrow (Top) -->
+    <path
+        android:fillColor="#164663"
+        android:pathData="M100,20 C130,20 155,35 170,55 L185,40 L185,90 L135,90 L155,70 C143,55 123,45 100,45 C75,45 53,58 41,78 L20,65 C38,38 67,20 100,20 Z" />
+    <!-- Orange Arrow (Bottom) -->
+    <path
+        android:fillColor="#F7941D"
+        android:pathData="M100,180 C70,180 45,165 30,145 L15,160 L15,110 L65,110 L45,130 C57,145 77,155 100,155 C125,155 147,142 159,122 L180,135 C162,162 133,180 100,180 Z" />
+</vector>

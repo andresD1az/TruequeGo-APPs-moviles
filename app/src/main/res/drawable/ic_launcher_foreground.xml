@@ -1,0 +1,18 @@
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="108dp"
+    android:height="108dp"
+    android:viewportWidth="200"
+    android:viewportHeight="200">
+    <!-- White Circle background for icon -->
+    <path
+        android:fillColor="#FFFFFF"
+        android:pathData="M100,100 m-80,0 a80,80 0,1 1,160 0 a80,80 0,1 1,-160 0" />
+    <!-- Blue Arrow (Top) -->
+    <path
+        android:fillColor="#164663"
+        android:pathData="M100,40 C125,40 145,52 157,68 L170,55 L170,100 L125,100 L142,83 C133,72 118,65 100,65 C78,65 59,77 49,95 L30,83 C45,58 71,40 100,40 Z" />
+    <!-- Orange Arrow (Bottom) -->
+    <path
+        android:fillColor="#F7941D"
+        android:pathData="M100,160 C75,160 55,148 43,132 L30,145 L30,100 L75,100 L58,117 C67,128 82,135 100,135 C122,135 141,123 151,105 L170,117 C155,142 129,160 100,160 Z" />
+</vector>
