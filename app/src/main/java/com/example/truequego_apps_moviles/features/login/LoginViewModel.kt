@@ -3,6 +3,7 @@ package com.example.truequego_apps_moviles.features.login
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.truequego_apps_moviles.domain.repository.AuthRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.asSharedFlow
@@ -10,7 +11,9 @@ import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
-class LoginViewModel @Inject constructor() : ViewModel() {
+class LoginViewModel @Inject constructor(
+    private val authRepository: AuthRepository
+) : ViewModel() {
 
     var email = mutableStateOf("")
     var password = mutableStateOf("")
@@ -18,17 +21,24 @@ class LoginViewModel @Inject constructor() : ViewModel() {
     private val _loginResult = MutableSharedFlow<String>()
     val loginResult = _loginResult.asSharedFlow()
 
+    private val _isLoading = mutableStateOf(false)
+    val isLoading get() = _isLoading
+
     fun onLoginClick() {
+        if (email.value.isBlank() || password.value.isBlank()) {
+            viewModelScope.launch { _loginResult.emit("Por favor, completa todos los campos") }
+            return
+        }
+
+        _isLoading.value = true
         viewModelScope.launch {
-            when {
-                email.value.isBlank() || password.value.isBlank() ->
-                    _loginResult.emit("Por favor, completa todos los campos")
-                !android.util.Patterns.EMAIL_ADDRESS.matcher(email.value.trim()).matches() ->
-                    _loginResult.emit("Ingresa un correo electrónico válido")
-                password.value.length < 6 ->
-                    _loginResult.emit("La contraseña debe tener al menos 6 caracteres")
-                else ->
-                    _loginResult.emit("Inicio de sesión exitoso")
+            authRepository.login(email.value.trim(), password.value).collect { result ->
+                _isLoading.value = false
+                result.onSuccess {
+                    _loginResult.emit("LOGIN_SUCCESS")
+                }.onFailure {
+                    _loginResult.emit(it.message ?: "Error desconocido")
+                }
             }
         }
     }

@@ -1,18 +1,17 @@
 package com.example.truequego_apps_moviles.features.home
 
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.*
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.AllInclusive
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
-import com.example.truequego_apps_moviles.R
-import com.example.truequego_apps_moviles.ui.theme.OrangeAccent
+import androidx.compose.ui.tooling.preview.Preview
+import com.example.truequego_apps_moviles.ui.component.PrimaryButton
+import com.example.truequego_apps_moviles.ui.theme.*
 
 @Composable
 fun HomeScreen(
@@ -20,75 +19,71 @@ fun HomeScreen(
 ) {
     Surface(
         modifier = Modifier.fillMaxSize(),
-        color = MaterialTheme.colorScheme.background
+        color = SurfaceContainerLowest
     ) {
         Column(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(24.dp),
+                .padding(horizontal = 32.dp, vertical = 64.dp),
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.Center
         ) {
-            // Logo
-            Row(
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                Image(
-                    painter = painterResource(id = R.drawable.ic_logo),
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                // Usamos Icons.Filled para asegurar compatibilidad con el set extendido
+                Icon(
+                    imageVector = Icons.Filled.AllInclusive,
                     contentDescription = "TruequeGo Logo",
-                    modifier = Modifier.size(80.dp)
+                    modifier = Modifier.size(64.dp),
+                    tint = PrimaryNavy
                 )
-                Spacer(modifier = Modifier.width(8.dp))
+                Spacer(modifier = Modifier.width(16.dp))
                 Text(
                     text = "trueque",
-                    style = MaterialTheme.typography.displaySmall,
-                    fontWeight = FontWeight.Bold,
-                    color = MaterialTheme.colorScheme.primary
+                    style = MaterialTheme.typography.displayMedium,
+                    color = PrimaryNavy
                 )
                 Text(
                     text = "GO",
-                    style = MaterialTheme.typography.displaySmall,
-                    fontWeight = FontWeight.Bold,
-                    color = OrangeAccent
+                    style = MaterialTheme.typography.displayMedium,
+                    color = TertiaryAccent
                 )
             }
 
-            Spacer(modifier = Modifier.height(32.dp))
+            Spacer(modifier = Modifier.height(48.dp))
 
-            // App Description
             Text(
-                text = "¡Intercambia lo que ya no usas por algo nuevo!",
-                style = MaterialTheme.typography.headlineSmall,
-                fontWeight = FontWeight.SemiBold,
+                text = "Intercambia lo\nque ya no usas",
+                style = MaterialTheme.typography.displayLarge,
                 textAlign = TextAlign.Center,
-                color = MaterialTheme.colorScheme.onBackground
+                color = PrimaryNavy,
+                modifier = Modifier.fillMaxWidth()
             )
 
-            Spacer(modifier = Modifier.height(16.dp))
+            Spacer(modifier = Modifier.height(24.dp))
 
             Text(
-                text = "Únete a la plataforma líder en trueque colaborativo. Conecta con miles de personas cerca de ti y empieza a intercambiar productos de forma fácil, segura y sostenible.",
+                text = "Únete a la nueva era del trueque colaborativo sostenible. Dale valor a tus cosas y descubre algo mejor.",
                 style = MaterialTheme.typography.bodyLarge,
                 textAlign = TextAlign.Center,
-                color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.7f)
+                color = OnSurfaceVariant,
+                modifier = Modifier.padding(horizontal = 8.dp)
             )
 
-            Spacer(modifier = Modifier.height(64.dp))
+            Spacer(modifier = Modifier.weight(1f))
 
-            // Start Button
-            Button(
+            PrimaryButton(
+                text = "Comienza la experiencia",
                 onClick = onNavigateToLogin,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(56.dp),
-                shape = MaterialTheme.shapes.medium
-            ) {
-                Text(
-                    text = "Empezar ahora",
-                    fontSize = 18.sp,
-                    fontWeight = FontWeight.Bold
-                )
-            }
+                modifier = Modifier.padding(bottom = 32.dp)
+            )
         }
+    }
+}
+
+@Preview(showBackground = true, showSystemUi = true)
+@Composable
+fun HomePreview() {
+    TruequeGoAPPsmovilesTheme {
+        HomeScreen(onNavigateToLogin = {})
     }
 }

@@ -13,6 +13,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
@@ -20,7 +21,12 @@ import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.hilt.navigation.compose.hiltViewModel
+import com.example.truequego_apps_moviles.R
+import com.example.truequego_apps_moviles.ui.component.PrimaryButton
+import com.example.truequego_apps_moviles.ui.component.SoftFocusTextField
+import com.example.truequego_apps_moviles.ui.theme.*
 import kotlinx.coroutines.flow.collectLatest
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -30,8 +36,6 @@ fun PasswordResetScreen(
     viewModel: RecoveryViewModel = hiltViewModel()
 ) {
     val snackbarHostState = remember { SnackbarHostState() }
-    val focusRequesters = remember { List(5) { FocusRequester() } }
-    var isPasswordVisible by remember { mutableStateOf(false) }
 
     LaunchedEffect(key1 = true) {
         viewModel.recoveryResult.collectLatest { message ->
@@ -39,118 +43,165 @@ fun PasswordResetScreen(
         }
     }
 
+    PasswordResetContent(
+        codeDigits = viewModel.codeDigits,
+        newPassword = viewModel.newPassword.value,
+        confirmNewPassword = viewModel.confirmNewPassword.value,
+        onCodeDigitChange = { index, value, focusRequesters ->
+            if (value.length <= 1) {
+                viewModel.codeDigits[index] = value
+                if (value.isNotEmpty() && index < 4) focusRequesters[index + 1].requestFocus()
+            }
+        },
+        onNewPasswordChange = { viewModel.newPassword.value = it },
+        onConfirmNewPasswordChange = { viewModel.confirmNewPassword.value = it },
+        onResetClick = { viewModel.onResetPassword() },
+        onNavigateBack = onNavigateBack,
+        snackbarHostState = snackbarHostState
+    )
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun PasswordResetContent(
+    codeDigits: List<String>,
+    newPassword: String,
+    confirmNewPassword: String,
+    onCodeDigitChange: (Int, String, List<FocusRequester>) -> Unit,
+    onNewPasswordChange: (String) -> Unit,
+    onConfirmNewPasswordChange: (String) -> Unit,
+    onResetClick: () -> Unit,
+    onNavigateBack: () -> Unit,
+    snackbarHostState: SnackbarHostState = remember { SnackbarHostState() }
+) {
+    val focusRequesters = remember { List(5) { FocusRequester() } }
+    var isPasswordVisible by remember { mutableStateOf(false) }
+
     Scaffold(
         topBar = {
             TopAppBar(
                 title = { },
                 navigationIcon = {
-                    IconButton(onClick = onNavigateBack) {
-                        Icon(imageVector = Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Atrás")
+                    IconButton(onClick = onNavigateBack, modifier = Modifier.padding(16.dp)) {
+                        Icon(
+                            imageVector = Icons.AutoMirrored.Filled.ArrowBack,
+                            contentDescription = stringResource(R.string.reset_navigate_back),
+                            tint = PrimaryNavy
+                        )
                     }
-                }
+                },
+                colors = TopAppBarDefaults.topAppBarColors(containerColor = SurfaceContainerLowest)
             )
         },
-        snackbarHost = { SnackbarHost(snackbarHostState) }
+        snackbarHost = { SnackbarHost(snackbarHostState) },
+        containerColor = SurfaceContainerLowest
     ) { paddingValues ->
         Column(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(paddingValues)
-                .padding(24.dp),
+                .padding(horizontal = 32.dp),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             Text(
-                text = "Restablecer contraseña",
-                style = MaterialTheme.typography.headlineMedium,
-                fontWeight = FontWeight.Bold
+                text = stringResource(R.string.reset_title),
+                style = MaterialTheme.typography.displaySmall,
+                fontWeight = FontWeight.Bold,
+                color = PrimaryNavy,
+                textAlign = TextAlign.Center
             )
+
+            Spacer(modifier = Modifier.height(16.dp))
 
             Text(
-                text = "Ingresa el código de 5 dígitos enviado a tu correo y tu nueva contraseña",
-                style = MaterialTheme.typography.bodyMedium,
-                color = Color.Gray,
-                textAlign = TextAlign.Center,
-                modifier = Modifier.padding(top = 8.dp)
+                text = stringResource(R.string.reset_subtitle),
+                style = MaterialTheme.typography.bodyLarge,
+                color = OnSurfaceVariant,
+                textAlign = TextAlign.Center
             )
 
-            Spacer(modifier = Modifier.height(32.dp))
+            Spacer(modifier = Modifier.height(48.dp))
 
-            // Código de 5 dígitos
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.spacedBy(8.dp),
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                viewModel.codeDigits.forEachIndexed { index, digit ->
+                codeDigits.forEachIndexed { index, digit ->
                     OutlinedTextField(
                         value = digit,
-                        onValueChange = { value ->
-                            if (value.length <= 1) {
-                                viewModel.codeDigits[index] = value
-                                if (value.isNotEmpty() && index < 4) {
-                                    focusRequesters[index + 1].requestFocus()
-                                }
-                            }
-                        },
-                        modifier = Modifier
-                            .weight(1f)
-                            .focusRequester(focusRequesters[index]),
-                        textStyle = LocalTextStyle.current.copy(textAlign = TextAlign.Center, fontSize = 20.sp),
-                        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
-                        shape = MaterialTheme.shapes.small
+                        onValueChange = { onCodeDigitChange(index, it, focusRequesters) },
+                        modifier = Modifier.weight(1f).focusRequester(focusRequesters[index]),
+                        textStyle = LocalTextStyle.current.copy(
+                            textAlign = TextAlign.Center,
+                            fontSize = 24.sp,
+                            fontWeight = FontWeight.Bold,
+                            color = PrimaryNavy
+                        ),
+                        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.NumberPassword),
+                        shape = MaterialTheme.shapes.medium,
+                        colors = OutlinedTextFieldDefaults.colors(
+                            focusedContainerColor = SurfaceContainerLowest,
+                            unfocusedContainerColor = SurfaceContainerLow,
+                            focusedBorderColor = PrimaryNavy,
+                            unfocusedBorderColor = Color.Transparent
+                        )
                     )
                 }
             }
 
-            Spacer(modifier = Modifier.height(32.dp))
+            Spacer(modifier = Modifier.height(48.dp))
 
-            // Nueva Contraseña
-            Text(
-                text = "NUEVA CONTRASEÑA",
-                modifier = Modifier.fillMaxWidth(),
-                style = MaterialTheme.typography.labelMedium,
-                fontWeight = FontWeight.Bold
-            )
-            OutlinedTextField(
-                value = viewModel.newPassword.value,
-                onValueChange = { viewModel.newPassword.value = it },
-                modifier = Modifier.fillMaxWidth(),
-                placeholder = { Text("Mínimo 8 caracteres") },
+            SoftFocusTextField(
+                value = newPassword,
+                onValueChange = onNewPasswordChange,
+                label = stringResource(R.string.reset_new_password_label),
+                placeholder = stringResource(R.string.reset_new_password_placeholder),
                 visualTransformation = if (isPasswordVisible) VisualTransformation.None else PasswordVisualTransformation(),
                 trailingIcon = {
                     IconButton(onClick = { isPasswordVisible = !isPasswordVisible }) {
-                        Icon(imageVector = if (isPasswordVisible) Icons.Filled.Visibility else Icons.Filled.VisibilityOff, null)
+                        Icon(
+                            imageVector = if (isPasswordVisible) Icons.Filled.Visibility else Icons.Filled.VisibilityOff,
+                            contentDescription = null,
+                            tint = OnSurfaceVariant
+                        )
                     }
                 },
-                shape = MaterialTheme.shapes.medium
+                modifier = Modifier.fillMaxWidth()
             )
 
-            Spacer(modifier = Modifier.height(16.dp))
+            Spacer(modifier = Modifier.height(24.dp))
 
-            // Confirmar Nueva Contraseña
-            Text(
-                text = "CONFIRMAR NUEVA CONTRASEÑA",
-                modifier = Modifier.fillMaxWidth(),
-                style = MaterialTheme.typography.labelMedium,
-                fontWeight = FontWeight.Bold
-            )
-            OutlinedTextField(
-                value = viewModel.confirmNewPassword.value,
-                onValueChange = { viewModel.confirmNewPassword.value = it },
-                modifier = Modifier.fillMaxWidth(),
+            SoftFocusTextField(
+                value = confirmNewPassword,
+                onValueChange = onConfirmNewPasswordChange,
+                label = stringResource(R.string.reset_confirm_password_label),
+                placeholder = stringResource(R.string.reset_confirm_password_placeholder),
                 visualTransformation = if (isPasswordVisible) VisualTransformation.None else PasswordVisualTransformation(),
-                shape = MaterialTheme.shapes.medium
+                modifier = Modifier.fillMaxWidth()
             )
 
             Spacer(modifier = Modifier.height(48.dp))
 
-            Button(
-                onClick = { viewModel.onResetPassword() },
-                modifier = Modifier.fillMaxWidth().height(56.dp),
-                shape = MaterialTheme.shapes.medium
-            ) {
-                Text(text = "Restablecer contraseña", fontSize = 16.sp, fontWeight = FontWeight.Bold)
-            }
+            PrimaryButton(
+                text = stringResource(R.string.reset_button),
+                onClick = onResetClick,
+                modifier = Modifier.fillMaxWidth()
+            )
         }
+    }
+}
+
+@Preview(showBackground = true, showSystemUi = true)
+@Composable
+fun PasswordResetPreview() {
+    TruequeGoAPPsmovilesTheme {
+        PasswordResetContent(
+            codeDigits = listOf("", "", "", "", ""),
+            newPassword = "", confirmNewPassword = "",
+            onCodeDigitChange = { _, _, _ -> },
+            onNewPasswordChange = {}, onConfirmNewPasswordChange = {},
+            onResetClick = {}, onNavigateBack = {}
+        )
     }
 }

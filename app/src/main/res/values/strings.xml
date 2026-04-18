@@ -1,3 +1,145 @@
 <resources>
     <string name="app_name">TruequeGo-APPs-moviles</string>
+
+    <!-- Home Screen -->
+    <string name="home_logo_description">TruequeGo Logo</string>
+    <string name="home_brand_first">trueque</string>
+    <string name="home_brand_second">GO</string>
+    <string name="home_headline">Intercambia lo\nque ya no usas</string>
+    <string name="home_subtitle">Únete a la nueva era del trueque colaborativo sostenible. Dale valor a tus cosas y descubre algo mejor.</string>
+    <string name="home_cta">Comienza la experiencia</string>
+
+    <!-- Login Screen -->
+    <string name="login_title">Bienvenido de nuevo</string>
+    <string name="login_subtitle">Inicia sesión para continuar intercambiando</string>
+    <string name="login_email_label">Correo Electrónico</string>
+    <string name="login_email_placeholder">tu@correo.com</string>
+    <string name="login_password_label">Contraseña</string>
+    <string name="login_password_placeholder">********</string>
+    <string name="login_forgot_password">¿Olvidaste tu contraseña?</string>
+    <string name="login_button">Iniciar sesión</string>
+    <string name="login_no_account">¿No tienes una cuenta? </string>
+    <string name="login_register_link">Regístrate aquí</string>
+    <string name="login_show_password">Mostrar contraseña</string>
+    <string name="login_navigate_back">Regresar</string>
+
+    <!-- Register Screen -->
+    <string name="register_title_step1">Crea tu cuenta</string>
+    <string name="register_title_step2">Tu ubicación</string>
+    <string name="register_name_label">Nombre Completo</string>
+    <string name="register_name_placeholder">Tu nombre completo</string>
+    <string name="register_email_label">Correo Electrónico</string>
+    <string name="register_email_placeholder">tu@correo.com</string>
+    <string name="register_password_label">Contraseña</string>
+    <string name="register_password_placeholder">********</string>
+    <string name="register_continue_button">Continuar</string>
+    <string name="register_create_button">Crear mi cuenta</string>
+    <string name="register_city_dialog_title">Selecciona tu ciudad</string>
+    <string name="register_city_dialog_close">CERRAR</string>
+    <string name="register_navigate_back">Regresar</string>
+
+    <!-- Password Recovery Screen -->
+    <string name="recovery_title">¿Olvidaste tu contraseña?</string>
+    <string name="recovery_subtitle">Ingresa tu correo y te enviaremos un enlace para restablecerla</string>
+    <string name="recovery_email_label">Correo Electrónico</string>
+    <string name="recovery_email_placeholder">tu@correo.com</string>
+    <string name="recovery_send_button">Enviar enlace</string>
+    <string name="recovery_spam_hint">También revisa tu carpeta de spam</string>
+    <string name="recovery_navigate_back">Regresar</string>
+
+    <!-- Password Reset Screen -->
+    <string name="reset_title">Restablecer contraseña</string>
+    <string name="reset_subtitle">Ingresa el código de 5 dígitos enviado a tu correo y tu nueva contraseña</string>
+    <string name="reset_new_password_label">Nueva Contraseña</string>
+    <string name="reset_new_password_placeholder">Mínimo 8 caracteres</string>
+    <string name="reset_confirm_password_label">Confirmar Nueva Contraseña</string>
+    <string name="reset_confirm_password_placeholder">Repite tu contraseña</string>
+    <string name="reset_button">Restablecer contraseña</string>
+    <string name="reset_navigate_back">Atrás</string>
+
+    <!-- Dashboard Screen -->
+    <string name="dashboard_logo_description">Logo</string>
+    <string name="dashboard_brand">THE EXCHANGE</string>
+    <string name="dashboard_nav_home">Inicio</string>
+    <string name="dashboard_nav_trades">Trueques</string>
+    <string name="dashboard_nav_alerts">Alertas</string>
+    <string name="dashboard_nav_profile">Perfil</string>
+    <string name="dashboard_nav_communities">Comunidades</string>
+    <string name="dashboard_nav_map">Mapa</string>
+    <string name="dashboard_fab_description">Nuevo Trueque</string>
+
+    <!-- Main Feed Screen -->
+    <string name="feed_search_placeholder">Buscar en The Exchange…</string>
+    <string name="feed_filter_nearby">Cercanos</string>
+    <string name="feed_filter_armenia">Armenia</string>
+    <string name="feed_filter_calarca">Calarcá</string>
+    <string name="feed_filter_montenegro">Montenegro</string>
+    <string name="feed_category_all">Todos</string>
+    <string name="feed_category_tech">Tecnología</string>
+    <string name="feed_category_books">Libros</string>
+    <string name="feed_category_clothes">Ropa</string>
+    <string name="feed_empty">No hay publicaciones aún. Sé el primero en publicar un trueque.</string>
+    <string name="feed_saved">Guardado</string>
+    <string name="feed_opening_comments">Abriendo comentarios…</string>
+    <string name="feed_proposal_started">Propuesta iniciada</string>
+    <string name="feed_verified">VERIFICADO</string>
+    <string name="feed_looking_for">Busca: </string>
+    <string name="feed_member">Miembro</string>
+    <string name="feed_searching_for_default">Algo de valor similar</string>
+    <string name="feed_owner_default">Usuario</string>
+    <string name="feed_category_default">General</string>
+    <string name="feed_fallback_image">https://images.unsplash.com/photo-1544947950-fa07a98d237f?auto=format&amp;fit=crop&amp;q=80&amp;w=1024</string>
+
+    <!-- Trades Screen -->
+    <string name="trades_title">Mis Intercambios</string>
+    <string name="trades_tab_proposals">Propuestas</string>
+    <string name="trades_tab_chat">Chat</string>
+    <string name="trades_tab_history">Historial</string>
+    <string name="trades_section_new">NUEVAS PROPUESTAS</string>
+    <string name="trades_section_chats">CHATS ACTIVOS</string>
+    <string name="trades_section_history">HISTORIAL DE TRUEQUES</string>
+    <string name="trades_proposal_give">DAS</string>
+    <string name="trades_proposal_receive">RECIBES</string>
+    <string name="trades_accept">Aceptar</string>
+    <string name="trades_reject">Rechazar</string>
+    <string name="trades_accepted_snackbar">Trueque aceptado. ¡Inicia el chat!</string>
+    <string name="trades_rejected_snackbar">Trueque rechazado</string>
+    <string name="trades_opening_chat">Abriendo chat…</string>
+    <string name="trades_viewing_details">Viendo detalles del intercambio pasado</string>
+    <string name="trades_status_finished">Finalizado</string>
+
+    <!-- Alerts Screen -->
+    <string name="alerts_title">Notificaciones</string>
+    <string name="alerts_mark_read">Marcar leídas</string>
+    <string name="alerts_mark_read_done">Todas marcadas como leídas</string>
+    <string name="alerts_section_new">NUEVAS</string>
+    <string name="alerts_section_previous">ANTERIORES</string>
+    <string name="alerts_going_back">Regresando…</string>
+    <string name="alerts_link_view">Ver</string>
+    <string name="alerts_link_view_post">Ver publicación</string>
+    <string name="alerts_link_view_badge">Ver insignia</string>
+
+    <!-- Profile Screen -->
+    <string name="profile_level_label">NIVELES</string>
+    <string name="profile_badges_label">INSIGNIAS</string>
+    <string name="profile_stat_active">Activas</string>
+    <string name="profile_stat_finished">Finalizadas</string>
+    <string name="profile_stat_pending">Pendientes</string>
+    <string name="profile_level_novice">Novato</string>
+    <string name="profile_level_novice_pts">0–99 pts</string>
+    <string name="profile_level_trader">Intercambiador</string>
+    <string name="profile_level_trader_pts">100–249 pts</string>
+    <string name="profile_level_negotiator">Negociante</string>
+    <string name="profile_level_negotiator_pts">250–499 pts</string>
+    <string name="profile_level_master">Maestro del Trueque</string>
+    <string name="profile_level_master_pts">500+ pts</string>
+    <string name="profile_badge_first_trade">Primer Intercambio</string>
+    <string name="profile_badge_star">Negociante Estrella</string>
+    <string name="profile_badge_verified">Usuario Verificado</string>
+    <string name="profile_going_back">Regresando…</string>
+    <string name="profile_level_detail">Detalles de nivel \'%1$s\'</string>
+    <string name="profile_badge_unlocked">Insignia \'%1$s\' desbloqueada</string>
+
+    <!-- Session / DataStore -->
+    <string name="session_error_loading">Error al cargar la sesión</string>
 </resources>

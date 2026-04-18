@@ -1,13 +1,11 @@
 package com.example.truequego_apps_moviles.features.dashboard
 
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.*
@@ -18,358 +16,246 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.ui.tooling.preview.Preview
+import androidx.hilt.navigation.compose.hiltViewModel
 import coil.compose.AsyncImage
-import com.example.truequego_apps_moviles.R
-import com.example.truequego_apps_moviles.ui.theme.GrayText
-import com.example.truequego_apps_moviles.ui.theme.LightBlueBg
-import com.example.truequego_apps_moviles.ui.theme.OrangeAccent
+import com.example.truequego_apps_moviles.domain.model.Product
+import com.example.truequego_apps_moviles.ui.theme.*
 import kotlinx.coroutines.launch
+
+@Composable
+fun MainFeedScreen(viewModel: MainFeedViewModel = hiltViewModel()) {
+    val products by viewModel.products.collectAsState()
+    val isLoading by viewModel.isLoading
+    MainFeedContent(products = products, isLoading = isLoading)
+}
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun MainFeedScreen() {
+fun MainFeedContent(products: List<Product>, isLoading: Boolean) {
     val snackbarHostState = remember { SnackbarHostState() }
     val scope = rememberCoroutineScope()
-    
-    // States for interaction
     var searchQuery by remember { mutableStateOf("") }
     var selectedCity by remember { mutableStateOf("Cercanos") }
-    var selectedCategory by remember { mutableStateOf("Todos") }
-    
     val cities = listOf("Cercanos", "Armenia", "Calarcá", "Montenegro")
-    val categories = listOf(
-        CategoryData("Todos", null),
-        CategoryData("Tecnología", Icons.Default.Devices),
-        CategoryData("Libros", Icons.Default.MenuBook),
-        CategoryData("Ropa", Icons.Default.Checkroom)
-    )
 
-    Scaffold(
-        snackbarHost = { SnackbarHost(snackbarHostState) },
-        containerColor = Color.White
-    ) { paddingValues ->
-        Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(paddingValues)
+    Box(modifier = Modifier.fillMaxSize().background(SurfaceContainerLowest)) {
+        LazyColumn(
+            modifier = Modifier.fillMaxSize(),
+            contentPadding = PaddingValues(bottom = 32.dp)
         ) {
-            // Toolbar
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = 16.dp, vertical = 8.dp),
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.SpaceBetween
-            ) {
-                Row(verticalAlignment = Alignment.CenterVertically) {
-                    Image(
-                        painter = painterResource(id = R.drawable.ic_logo),
-                        contentDescription = null,
-                        modifier = Modifier.size(32.dp)
-                    )
-                    Spacer(modifier = Modifier.width(4.dp))
-                    Text(
-                        text = "trueque",
-                        style = MaterialTheme.typography.titleMedium,
-                        fontWeight = FontWeight.Bold,
-                        color = MaterialTheme.colorScheme.primary
-                    )
-                    Text(
-                        text = "GO",
-                        style = MaterialTheme.typography.titleMedium,
-                        fontWeight = FontWeight.Bold,
-                        color = OrangeAccent
-                    )
+            // Buscador
+            item {
+                Box(modifier = Modifier.fillMaxWidth().padding(horizontal = 24.dp, vertical = 16.dp)) {
+                    SearchBar(
+                        query = searchQuery,
+                        onQueryChange = { searchQuery = it },
+                        onSearch = { },
+                        active = false,
+                        onActiveChange = {},
+                        placeholder = { Text("Buscar en The Exchange...", color = OnSurfaceVariant) },
+                        leadingIcon = { Icon(Icons.Default.Search, null, tint = PrimaryNavy) },
+                        modifier = Modifier.fillMaxWidth(),
+                        shape = RoundedCornerShape(12.dp),
+                        colors = SearchBarDefaults.colors(
+                            containerColor = SurfaceContainerLow,
+                            dividerColor = Color.Transparent
+                        )
+                    ) {}
                 }
-                Row {
-                    BadgedBox(
-                        badge = { Badge { Text("3") } },
-                        modifier = Modifier.padding(end = 16.dp)
-                    ) {
-                        Icon(
-                            imageVector = Icons.Outlined.Notifications,
-                            contentDescription = "Notificaciones",
-                            modifier = Modifier
-                                .size(32.dp)
-                                .clip(CircleShape)
-                                .background(LightBlueBg)
-                                .clickable { scope.launch { snackbarHostState.showSnackbar("Abriendo notificaciones...") } }
-                                .padding(6.dp),
-                            tint = MaterialTheme.colorScheme.primary
+            }
+
+            // Filtros ciudad
+            item {
+                LazyRow(
+                    modifier = Modifier.fillMaxWidth(),
+                    contentPadding = PaddingValues(horizontal = 24.dp),
+                    horizontalArrangement = Arrangement.spacedBy(12.dp)
+                ) {
+                    items(cities) { city ->
+                        FilterChip(
+                            selected = selectedCity == city,
+                            label = city,
+                            onClick = { selectedCity = city }
                         )
                     }
-                    Icon(
-                        imageVector = Icons.Outlined.Person,
-                        contentDescription = "Perfil",
-                        modifier = Modifier
-                            .size(32.dp)
-                            .clip(CircleShape)
-                            .background(LightBlueBg)
-                            .clickable { scope.launch { snackbarHostState.showSnackbar("Abriendo tu perfil...") } }
-                            .padding(6.dp),
-                        tint = MaterialTheme.colorScheme.primary
+                }
+                Spacer(modifier = Modifier.height(16.dp))
+            }
+
+            // Contenido
+            when {
+                isLoading -> item {
+                    Box(
+                        modifier = Modifier.fillMaxWidth().height(300.dp),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        CircularProgressIndicator(color = PrimaryNavy)
+                    }
+                }
+                products.isEmpty() -> item {
+                    Box(
+                        modifier = Modifier.fillMaxWidth().height(300.dp).padding(32.dp),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                            Icon(Icons.Outlined.Inventory2, null, modifier = Modifier.size(64.dp), tint = SurfaceContainerHighest)
+                            Spacer(modifier = Modifier.height(16.dp))
+                            Text(
+                                "No hay publicaciones aún.\nPresiona + para publicar la primera.",
+                                textAlign = TextAlign.Center,
+                                color = OnSurfaceVariant,
+                                style = MaterialTheme.typography.bodyLarge
+                            )
+                        }
+                    }
+                }
+                else -> items(products) { product ->
+                    ProductCard(
+                        product = product,
+                        modifier = Modifier.padding(horizontal = 24.dp).padding(bottom = 24.dp),
+                        onTradeClick = { scope.launch { snackbarHostState.showSnackbar("Propuesta iniciada") } }
                     )
                 }
             }
+        }
 
-            // Search Bar
-            SearchBar(
-                query = searchQuery,
-                onQueryChange = { searchQuery = it },
-                onSearch = { scope.launch { snackbarHostState.showSnackbar("Buscando: $it") } },
-                active = false,
-                onActiveChange = {},
-                placeholder = { Text("Buscar en truequeGO...", color = Color.LightGray) },
-                leadingIcon = { Icon(Icons.Default.Search, contentDescription = null, tint = MaterialTheme.colorScheme.primary) },
+        SnackbarHost(
+            hostState = snackbarHostState,
+            modifier = Modifier.align(Alignment.BottomCenter)
+        )
+    }
+}
+
+@Composable
+fun ProductCard(product: Product, modifier: Modifier = Modifier, onTradeClick: () -> Unit) {
+    Surface(
+        modifier = modifier.fillMaxWidth().clickable { onTradeClick() },
+        shape = RoundedCornerShape(16.dp),
+        color = SurfaceContainerLowest,
+        shadowElevation = 1.dp
+    ) {
+        Column {
+            Box(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(horizontal = 16.dp),
-                shape = RoundedCornerShape(16.dp),
-                colors = SearchBarDefaults.colors(containerColor = Color(0xFFF8FAFB))
-            ) {}
-
-            Spacer(modifier = Modifier.height(16.dp))
-
-            // Filters Cities
-            LazyRow(
-                modifier = Modifier.fillMaxWidth(),
-                contentPadding = PaddingValues(horizontal = 16.dp),
-                horizontalArrangement = Arrangement.spacedBy(8.dp)
+                    .height(220.dp)
+                    .clip(RoundedCornerShape(topStart = 16.dp, topEnd = 16.dp))
             ) {
-                items(cities) { city ->
-                    FilterChip(
-                        selected = selectedCity == city,
-                        label = city,
-                        onClick = { selectedCity = city }
+                AsyncImage(
+                    model = if (product.imageUrl.isNotEmpty()) product.imageUrl
+                    else "https://images.unsplash.com/photo-1544947950-fa07a98d237f?auto=format&fit=crop&q=80&w=800",
+                    contentDescription = product.title,
+                    modifier = Modifier.fillMaxSize(),
+                    contentScale = ContentScale.Crop
+                )
+                Surface(
+                    modifier = Modifier.padding(12.dp),
+                    color = PrimaryNavy.copy(alpha = 0.85f),
+                    shape = RoundedCornerShape(4.dp)
+                ) {
+                    Text(
+                        "GENERAL",
+                        color = OnPrimary,
+                        modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp),
+                        style = MaterialTheme.typography.labelSmall,
+                        letterSpacing = 1.sp
                     )
                 }
             }
-
-            // Categories
-            LazyRow(
-                modifier = Modifier.fillMaxWidth().padding(top = 8.dp),
-                contentPadding = PaddingValues(horizontal = 16.dp),
-                horizontalArrangement = Arrangement.spacedBy(8.dp)
-            ) {
-                items(categories) { cat ->
-                    CategoryChip(
-                        selected = selectedCategory == cat.label,
-                        label = cat.label,
-                        icon = cat.icon,
-                        onClick = { selectedCategory = cat.label }
+            Column(modifier = Modifier.padding(16.dp)) {
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Text(
+                        product.title,
+                        style = MaterialTheme.typography.titleLarge,
+                        color = PrimaryNavy,
+                        fontWeight = FontWeight.Bold,
+                        modifier = Modifier.weight(1f)
+                    )
+                    if (product.condition.isNotBlank()) {
+                        Surface(color = SurfaceContainerLow, shape = RoundedCornerShape(4.dp)) {
+                            Text(
+                                product.condition,
+                                modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp),
+                                style = MaterialTheme.typography.labelSmall,
+                                color = OnSurfaceVariant
+                            )
+                        }
+                    }
+                }
+                if (product.description.isNotBlank()) {
+                    Text(
+                        product.description,
+                        style = MaterialTheme.typography.bodyMedium,
+                        color = OnSurfaceVariant,
+                        maxLines = 2,
+                        overflow = TextOverflow.Ellipsis,
+                        modifier = Modifier.padding(top = 6.dp)
                     )
                 }
-            }
-
-            Spacer(modifier = Modifier.height(16.dp))
-
-            // Product List
-            LazyColumn(
-                modifier = Modifier.fillMaxSize(),
-                contentPadding = PaddingValues(16.dp),
-                verticalArrangement = Arrangement.spacedBy(16.dp)
-            ) {
-                item {
-                    ProductCard(
-                        title = "MacBook Pro 13\" 2019",
-                        description = "Portátil en excelente estado, 8GB RAM, 256GB SSD. Batería en perfecto estado con solo 45 ciclos de...",
-                        searchingFor = "iPhone 12 o superior +2",
-                        ownerName = "Carlos Mendoza",
-                        imageUrl = "https://images.unsplash.com/photo-1517336712462-d4c57a7996c3?auto=format&fit=crop&q=80&w=1024",
-                        category = "Tecnología",
-                        isVerified = true,
-                        status = "Como nuevo",
-                        likes = 24,
-                        comments = 5,
-                        onLikeClick = { scope.launch { snackbarHostState.showSnackbar("¡Te gusta este trueque!") } },
-                        onCommentClick = { scope.launch { snackbarHostState.showSnackbar("Abriendo chat con Carlos...") } },
-                        onTradeClick = { scope.launch { snackbarHostState.showSnackbar("Propuesta de trueque enviada") } }
-                    )
+                if (product.location.isNotBlank()) {
+                    Row(
+                        modifier = Modifier.padding(top = 10.dp),
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Icon(Icons.Default.LocationOn, null, modifier = Modifier.size(14.dp), tint = TertiaryAccent)
+                        Spacer(modifier = Modifier.width(4.dp))
+                        Text(product.location, color = OnSurfaceVariant, style = MaterialTheme.typography.labelSmall)
+                    }
                 }
-                item {
-                    ProductCard(
-                        title = "Libros de Diseño UI/UX",
-                        description = "Colección de 5 libros sobre fundamentos de diseño y experiencia de usuario. Como nuevos.",
-                        searchingFor = "Cámara reflex o similar",
-                        ownerName = "Ana Garcia",
-                        imageUrl = "https://images.unsplash.com/photo-1544947950-fa07a98d237f?auto=format&fit=crop&q=80&w=1024",
-                        category = "Libros",
-                        isVerified = true,
-                        status = "Leve uso",
-                        likes = 12,
-                        comments = 2,
-                        onLikeClick = { scope.launch { snackbarHostState.showSnackbar("Guardado en favoritos") } },
-                        onCommentClick = { scope.launch { snackbarHostState.showSnackbar("Iniciando chat con Ana...") } },
-                        onTradeClick = { scope.launch { snackbarHostState.showSnackbar("Solicitud de intercambio enviada") } }
-                    )
+                Spacer(modifier = Modifier.height(12.dp))
+                Button(
+                    onClick = onTradeClick,
+                    modifier = Modifier.fillMaxWidth(),
+                    colors = ButtonDefaults.buttonColors(containerColor = PrimaryNavy),
+                    shape = RoundedCornerShape(8.dp)
+                ) {
+                    Icon(Icons.Default.SwapHoriz, null, modifier = Modifier.size(18.dp))
+                    Spacer(modifier = Modifier.width(8.dp))
+                    Text("Proponer intercambio", fontWeight = FontWeight.Bold)
                 }
             }
         }
     }
 }
 
-data class CategoryData(val label: String, val icon: ImageVector?)
-
 @Composable
 fun FilterChip(selected: Boolean, label: String, onClick: () -> Unit) {
     Surface(
         onClick = onClick,
-        color = if (selected) MaterialTheme.colorScheme.primary else Color(0xFFF1F3F4),
-        shape = RoundedCornerShape(12.dp)
+        color = if (selected) PrimaryNavy else SurfaceContainerLow,
+        shape = RoundedCornerShape(8.dp)
     ) {
         Text(
             text = label,
-            modifier = Modifier.padding(horizontal = 24.dp, vertical = 8.dp),
-            color = if (selected) Color.White else Color.Black,
+            modifier = Modifier.padding(horizontal = 20.dp, vertical = 10.dp),
+            color = if (selected) OnPrimary else OnSurface,
             fontWeight = FontWeight.Bold,
             fontSize = 14.sp
         )
     }
 }
 
+@Preview(showBackground = true, showSystemUi = true)
 @Composable
-fun CategoryChip(selected: Boolean, label: String, icon: ImageVector?, onClick: () -> Unit) {
-    Surface(
-        onClick = onClick,
-        color = if (selected) OrangeAccent else Color(0xFFF1F3F4),
-        shape = RoundedCornerShape(12.dp)
-    ) {
-        Row(
-            modifier = Modifier.padding(horizontal = 12.dp, vertical = 8.dp),
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            if (icon != null) {
-                Icon(
-                    imageVector = icon,
-                    contentDescription = null,
-                    modifier = Modifier.size(16.dp),
-                    tint = if (selected) Color.White else Color.Gray
-                )
-                Spacer(modifier = Modifier.width(4.dp))
-            }
-            Text(
-                text = label,
-                color = if (selected) Color.White else Color.Black,
-                fontWeight = FontWeight.Bold,
-                fontSize = 14.sp
-            )
-        }
-    }
-}
-
-@Composable
-fun ProductCard(
-    title: String,
-    description: String,
-    searchingFor: String,
-    ownerName: String,
-    imageUrl: String,
-    category: String,
-    isVerified: Boolean,
-    status: String,
-    likes: Int,
-    comments: Int,
-    onLikeClick: () -> Unit,
-    onCommentClick: () -> Unit,
-    onTradeClick: () -> Unit
-) {
-    Card(
-        modifier = Modifier.fillMaxWidth().clickable { onTradeClick() },
-        shape = RoundedCornerShape(24.dp),
-        colors = CardDefaults.cardColors(containerColor = Color.White),
-        elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
-    ) {
-        Column {
-            Box(modifier = Modifier.fillMaxWidth().height(200.dp)) {
-                AsyncImage(
-                    model = imageUrl,
-                    contentDescription = title,
-                    modifier = Modifier.fillMaxSize(),
-                    contentScale = ContentScale.Crop
-                )
-                // Highlights
-                Row(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(12.dp),
-                    horizontalArrangement = Arrangement.SpaceBetween
-                ) {
-                    Surface(
-                        color = MaterialTheme.colorScheme.primary.copy(alpha = 0.9f),
-                        shape = RoundedCornerShape(8.dp)
-                    ) {
-                        Text(
-                            text = category,
-                            color = Color.White,
-                            modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp),
-                            style = MaterialTheme.typography.labelSmall
-                        )
-                    }
-                    if (isVerified) {
-                        Surface(
-                            color = Color(0xFF2ECC71),
-                            shape = RoundedCornerShape(8.dp)
-                        ) {
-                            Row(modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp), verticalAlignment = Alignment.CenterVertically) {
-                                Icon(Icons.Default.Check, null, modifier = Modifier.size(12.dp), tint = Color.White)
-                                Spacer(modifier = Modifier.width(4.dp))
-                                Text("Verificada", color = Color.White, style = MaterialTheme.typography.labelSmall)
-                            }
-                        }
-                    }
-                }
-            }
-
-            Column(modifier = Modifier.padding(16.dp)) {
-                Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween, verticalAlignment = Alignment.CenterVertically) {
-                    Text(title, style = MaterialTheme.typography.titleLarge, fontWeight = FontWeight.Bold)
-                    Surface(color = Color(0xFFF1F3F4), shape = RoundedCornerShape(4.dp)) {
-                        Text(status, modifier = Modifier.padding(horizontal = 6.dp, vertical = 2.dp), style = MaterialTheme.typography.labelSmall, color = GrayText)
-                    }
-                }
-                
-                Text(description, style = MaterialTheme.typography.bodyMedium, color = GrayText, maxLines = 2, overflow = TextOverflow.Ellipsis, modifier = Modifier.padding(top = 4.dp))
-                
-                Row(modifier = Modifier.padding(top = 12.dp), verticalAlignment = Alignment.CenterVertically) {
-                    Icon(Icons.Default.Sync, null, modifier = Modifier.size(16.dp), tint = MaterialTheme.colorScheme.primary)
-                    Spacer(modifier = Modifier.width(4.dp))
-                    Text("Busca: ", color = MaterialTheme.colorScheme.primary, fontWeight = FontWeight.Bold, fontSize = 14.sp)
-                    Text(searchingFor, color = MaterialTheme.colorScheme.primary, fontSize = 14.sp)
-                }
-
-                HorizontalDivider(modifier = Modifier.padding(vertical = 16.dp), color = Color(0xFFEEEEEE))
-
-                Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween, verticalAlignment = Alignment.CenterVertically) {
-                    Row(verticalAlignment = Alignment.CenterVertically) {
-                        Surface(modifier = Modifier.size(36.dp), color = MaterialTheme.colorScheme.primary, shape = CircleShape) {
-                            Box(contentAlignment = Alignment.Center) {
-                                Text(ownerName.first().toString(), color = Color.White, fontWeight = FontWeight.Bold)
-                            }
-                        }
-                        Column(modifier = Modifier.padding(start = 12.dp)) {
-                            Text(ownerName, style = MaterialTheme.typography.titleSmall, fontWeight = FontWeight.Bold)
-                            Text("Negociante", style = MaterialTheme.typography.labelSmall, color = OrangeAccent)
-                        }
-                    }
-                    Row(verticalAlignment = Alignment.CenterVertically) {
-                        IconButton(onClick = onLikeClick) {
-                            Icon(Icons.Outlined.FavoriteBorder, null, modifier = Modifier.size(20.dp), tint = GrayText)
-                        }
-                        Text(likes.toString(), modifier = Modifier.padding(end = 8.dp), color = GrayText)
-                        IconButton(onClick = onCommentClick) {
-                            Icon(Icons.Outlined.ChatBubbleOutline, null, modifier = Modifier.size(20.dp), tint = GrayText)
-                        }
-                        Text(comments.toString(), color = GrayText)
-                    }
-                }
-            }
-        }
+fun MainFeedPreview() {
+    TruequeGoAPPsmovilesTheme {
+        MainFeedContent(
+            products = listOf(
+                Product(title = "MacBook Pro", description = "M1 Pro 14 pulgadas", condition = "Nuevo", location = "Armenia"),
+                Product(title = "Cámara Sony", description = "Alpha A7III con lente", condition = "Usado", location = "Calarcá")
+            ),
+            isLoading = false
+        )
     }
 }

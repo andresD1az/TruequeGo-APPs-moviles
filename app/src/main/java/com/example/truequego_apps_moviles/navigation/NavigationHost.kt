@@ -1,32 +1,44 @@
 package com.example.truequego_apps_moviles.navigation
 
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.collectAsState
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import com.example.truequego_apps_moviles.features.dashboard.DashboardScreen
 import com.example.truequego_apps_moviles.features.home.HomeScreen
 import com.example.truequego_apps_moviles.features.login.LoginScreen
-import com.example.truequego_apps_moviles.features.register.RegisterScreen
 import com.example.truequego_apps_moviles.features.recovery.PasswordRecoveryScreen
 import com.example.truequego_apps_moviles.features.recovery.PasswordResetScreen
-import com.example.truequego_apps_moviles.features.dashboard.DashboardScreen
+import com.example.truequego_apps_moviles.features.register.RegisterScreen
 
 @Composable
-fun NavigationHost() {
+fun NavigationHost(
+    viewModel: NavigationViewModel = hiltViewModel()
+) {
+    val isLoggedIn by viewModel.isLoggedIn.collectAsState()
     val navController = rememberNavController()
 
     NavHost(navController = navController, startDestination = NavRoutes.Home.route) {
         composable(NavRoutes.Home.route) {
-            HomeScreen(
-                onNavigateToLogin = { navController.navigate(NavRoutes.Login.route) }
-            )
+            if (isLoggedIn) {
+                navController.navigate(NavRoutes.Dashboard.route) {
+                    popUpTo(NavRoutes.Home.route) { inclusive = true }
+                }
+            } else {
+                HomeScreen(
+                    onNavigateToLogin = { navController.navigate(NavRoutes.Login.route) }
+                )
+            }
         }
         composable(NavRoutes.Login.route) {
             LoginScreen(
                 onNavigateBack = { navController.popBackStack() },
                 onNavigateToRegister = { navController.navigate(NavRoutes.Register.route) },
                 onNavigateToForgotPassword = { navController.navigate(NavRoutes.ForgotPassword.route) },
-                onLoginSuccess = { 
+                onLoginSuccess = {
                     navController.navigate(NavRoutes.Dashboard.route) {
                         popUpTo(NavRoutes.Home.route) { inclusive = true }
                     }
@@ -55,7 +67,14 @@ fun NavigationHost() {
             )
         }
         composable(NavRoutes.Dashboard.route) {
-            DashboardScreen()
+            DashboardScreen(
+                onLogout = {
+                    viewModel.logout()
+                    navController.navigate(NavRoutes.Home.route) {
+                        popUpTo(NavRoutes.Dashboard.route) { inclusive = true }
+                    }
+                }
+            )
         }
     }
 }

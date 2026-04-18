@@ -4,6 +4,7 @@ plugins {
     alias(libs.plugins.kotlin.compose)
     alias(libs.plugins.kotlin.kapt)
     alias(libs.plugins.hilt.android)
+    alias(libs.plugins.google.services)
 }
 
 android {
@@ -51,6 +52,14 @@ dependencies {
     implementation(libs.androidx.compose.ui.tooling.preview)
     implementation(libs.androidx.compose.material3)
 
+    // Firebase
+    implementation(platform(libs.firebase.bom))
+    implementation(libs.firebase.auth)
+    implementation(libs.firebase.firestore)
+    implementation(libs.firebase.analytics)
+
+    implementation("androidx.compose.ui:ui-text-google-fonts:1.6.0")
+
     // Iconos extendidos de Material
     implementation("androidx.compose.material:material-icons-extended")
 
@@ -58,10 +67,22 @@ dependencies {
     implementation(libs.androidx.navigation.compose)
 
     // Hilt
-    implementation("com.google.dagger:hilt-android:2.51.1")
-    kapt("com.google.dagger:hilt-android-compiler:2.51.1")
-    kapt("androidx.hilt:hilt-compiler:1.2.0")
-    implementation("androidx.hilt:hilt-navigation-compose:1.2.0")
+    implementation(libs.hilt.android)
+    kapt(libs.hilt.compiler)
+    kapt(libs.hilt.ext.compiler)
+    implementation(libs.hilt.navigation.compose)
+
+    // DataStore
+    implementation("androidx.datastore:datastore-preferences:1.1.1")
+
+    // OpenStreetMap - osmdroid (gratuito, sin API key)
+    implementation("org.osmdroid:osmdroid-android:6.1.18")
+
+    // Permisos en runtime
+    implementation("com.google.accompanist:accompanist-permissions:0.34.0")
+
+    // FusedLocationProvider para GPS en ViewModel
+    implementation("com.google.android.gms:play-services-location:21.3.0")
 
     // Coil para carga de imágenes
     implementation("io.coil-kt:coil-compose:2.6.0")

@@ -9,14 +9,15 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
-import com.example.truequego_apps_moviles.ui.theme.GrayText
-import com.example.truequego_apps_moviles.ui.theme.LightBlueBg
+import com.example.truequego_apps_moviles.R
+import com.example.truequego_apps_moviles.ui.component.PrimaryButton
+import com.example.truequego_apps_moviles.ui.component.SoftFocusTextField
+import com.example.truequego_apps_moviles.ui.theme.*
 import kotlinx.coroutines.flow.collectLatest
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -32,39 +33,35 @@ fun PasswordRecoveryScreen(
     LaunchedEffect(key1 = true) {
         viewModel.recoveryResult.collectLatest { message ->
             snackbarHostState.showSnackbar(message)
-            if (message.startsWith("Enlace enviado")) {
-                // Simular que después de enviar el correo, vamos a la pantalla de poner el código
-                onNavigateToReset()
-            }
+            if (message == "RECOVERY_EMAIL_SENT") onNavigateToReset()
         }
     }
 
     Scaffold(
         snackbarHost = { SnackbarHost(snackbarHostState) },
         topBar = {
-            IconButton(onClick = onNavigateBack, modifier = Modifier.padding(8.dp)) {
+            IconButton(onClick = onNavigateBack, modifier = Modifier.padding(16.dp)) {
                 Icon(
                     imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                    contentDescription = "Regresar",
-                    tint = MaterialTheme.colorScheme.primary
+                    contentDescription = stringResource(R.string.recovery_navigate_back),
+                    tint = PrimaryNavy
                 )
             }
         },
-        containerColor = Color.White
+        containerColor = SurfaceContainerLowest
     ) { paddingValues ->
         Column(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(paddingValues)
-                .padding(horizontal = 24.dp),
+                .padding(horizontal = 32.dp),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            Spacer(modifier = Modifier.height(32.dp))
+            Spacer(modifier = Modifier.height(24.dp))
 
-            // Central Icon
             Surface(
                 modifier = Modifier.size(120.dp),
-                color = LightBlueBg,
+                color = PrimaryContainer,
                 shape = CircleShape
             ) {
                 Box(contentAlignment = Alignment.Center) {
@@ -72,7 +69,7 @@ fun PasswordRecoveryScreen(
                         imageVector = Icons.Default.Lock,
                         contentDescription = null,
                         modifier = Modifier.size(48.dp),
-                        tint = MaterialTheme.colorScheme.primary
+                        tint = PrimaryNavy
                     )
                 }
             }
@@ -80,57 +77,46 @@ fun PasswordRecoveryScreen(
             Spacer(modifier = Modifier.height(48.dp))
 
             Text(
-                text = "¿Olvidaste tu contraseña?",
-                style = MaterialTheme.typography.headlineMedium,
+                text = stringResource(R.string.recovery_title),
+                style = MaterialTheme.typography.displaySmall,
                 fontWeight = FontWeight.Bold,
-                color = MaterialTheme.colorScheme.primary,
+                color = PrimaryNavy,
                 textAlign = TextAlign.Center
             )
 
             Spacer(modifier = Modifier.height(16.dp))
 
             Text(
-                text = "Ingresa tu correo y te enviaremos un enlace para restablecerla",
+                text = stringResource(R.string.recovery_subtitle),
                 style = MaterialTheme.typography.bodyLarge,
-                color = GrayText,
+                color = OnSurfaceVariant,
                 textAlign = TextAlign.Center
             )
 
             Spacer(modifier = Modifier.height(48.dp))
 
-            // Campo Correo
-            Text(
-                text = "CORREO ELECTRÓNICO",
-                modifier = Modifier.fillMaxWidth(),
-                style = MaterialTheme.typography.labelMedium,
-                fontWeight = FontWeight.Bold,
-                color = GrayText
-            )
-            OutlinedTextField(
+            SoftFocusTextField(
                 value = email,
                 onValueChange = { viewModel.email.value = it },
-                modifier = Modifier.fillMaxWidth().padding(top = 8.dp),
-                placeholder = { Text("tu@correo.com", color = Color.LightGray) },
-                shape = MaterialTheme.shapes.medium,
-                singleLine = true
+                label = stringResource(R.string.recovery_email_label),
+                placeholder = stringResource(R.string.recovery_email_placeholder),
+                modifier = Modifier.fillMaxWidth()
             )
 
             Spacer(modifier = Modifier.height(40.dp))
 
-            Button(
+            PrimaryButton(
+                text = stringResource(R.string.recovery_send_button),
                 onClick = { viewModel.onSendRecoveryLink() },
-                modifier = Modifier.fillMaxWidth().height(56.dp),
-                shape = MaterialTheme.shapes.medium
-            ) {
-                Text(text = "Enviar enlace de recuperación", fontSize = 16.sp, fontWeight = FontWeight.Bold)
-            }
+                modifier = Modifier.fillMaxWidth()
+            )
 
             Spacer(modifier = Modifier.height(32.dp))
 
             Text(
-                text = "También revisa tu carpeta de spam",
-                style = MaterialTheme.typography.bodySmall,
-                color = Color.LightGray,
+                text = stringResource(R.string.recovery_spam_hint),
+                style = MaterialTheme.typography.bodyMedium,
+                color = OnSurfaceVariant,
                 textAlign = TextAlign.Center
             )
         }

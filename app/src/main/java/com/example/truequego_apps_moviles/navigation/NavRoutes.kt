@@ -13,4 +13,7 @@ sealed class NavRoutes(val route: String) {
     object Alerts : NavRoutes("alerts")
     object Profile : NavRoutes("profile")
     object ResetPassword : NavRoutes("reset_password")
+    object Publish : NavRoutes("publish")
+    object Communities : NavRoutes("communities")
+    object Map : NavRoutes("map")
 }

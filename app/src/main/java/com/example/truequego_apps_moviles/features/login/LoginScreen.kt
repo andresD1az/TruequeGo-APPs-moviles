@@ -9,18 +9,20 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.hilt.navigation.compose.hiltViewModel
-import com.example.truequego_apps_moviles.ui.theme.GrayText
+import com.example.truequego_apps_moviles.R
+import com.example.truequego_apps_moviles.ui.component.PrimaryButton
+import com.example.truequego_apps_moviles.ui.component.SoftFocusTextField
+import com.example.truequego_apps_moviles.ui.theme.*
 import kotlinx.coroutines.flow.collectLatest
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun LoginScreen(
     onNavigateBack: () -> Unit,
@@ -31,18 +33,41 @@ fun LoginScreen(
 ) {
     val email by viewModel.email
     val password by viewModel.password
-    val snackbarHostState = remember { SnackbarHostState() }
-    var isPasswordVisible by remember { mutableStateOf(false) }
+    val isLoading by viewModel.isLoading
 
     LaunchedEffect(key1 = true) {
         viewModel.loginResult.collectLatest { message ->
-            if (message == "Inicio de sesión exitoso") {
-                onLoginSuccess()
-            } else {
-                snackbarHostState.showSnackbar(message)
-            }
+            if (message == "LOGIN_SUCCESS") onLoginSuccess()
         }
     }
+
+    LoginContent(
+        email = email,
+        password = password,
+        isLoading = isLoading,
+        onEmailChange = { viewModel.email.value = it },
+        onPasswordChange = { viewModel.password.value = it },
+        onLoginClick = { viewModel.onLoginClick() },
+        onNavigateBack = onNavigateBack,
+        onNavigateToRegister = onNavigateToRegister,
+        onNavigateToForgotPassword = onNavigateToForgotPassword
+    )
+}
+
+@Composable
+fun LoginContent(
+    email: String,
+    password: String,
+    isLoading: Boolean,
+    onEmailChange: (String) -> Unit,
+    onPasswordChange: (String) -> Unit,
+    onLoginClick: () -> Unit,
+    onNavigateBack: () -> Unit,
+    onNavigateToRegister: () -> Unit,
+    onNavigateToForgotPassword: () -> Unit
+) {
+    val snackbarHostState = remember { SnackbarHostState() }
+    var isPasswordVisible by remember { mutableStateOf(false) }
 
     Scaffold(
         snackbarHost = { SnackbarHost(snackbarHostState) },
@@ -50,12 +75,12 @@ fun LoginScreen(
             IconButton(onClick = onNavigateBack, modifier = Modifier.padding(8.dp)) {
                 Icon(
                     imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                    contentDescription = "Regresar",
-                    tint = MaterialTheme.colorScheme.primary
+                    contentDescription = stringResource(R.string.login_navigate_back),
+                    tint = PrimaryNavy
                 )
             }
         },
-        containerColor = Color.White
+        containerColor = SurfaceContainerLowest
     ) { paddingValues ->
         Column(
             modifier = Modifier
@@ -67,94 +92,96 @@ fun LoginScreen(
             Spacer(modifier = Modifier.height(32.dp))
 
             Text(
-                text = "Bienvenido de nuevo",
-                style = MaterialTheme.typography.headlineMedium,
-                fontWeight = FontWeight.Bold,
-                color = MaterialTheme.colorScheme.primary,
+                text = stringResource(R.string.login_title),
+                style = MaterialTheme.typography.displayMedium,
+                color = PrimaryNavy,
                 modifier = Modifier.fillMaxWidth()
             )
             Text(
-                text = "Inicia sesión para continuar intercambiando",
+                text = stringResource(R.string.login_subtitle),
                 style = MaterialTheme.typography.bodyLarge,
-                color = GrayText,
-                modifier = Modifier.fillMaxWidth()
+                color = OnSurfaceVariant,
+                modifier = Modifier.fillMaxWidth().padding(top = 8.dp)
             )
 
             Spacer(modifier = Modifier.height(48.dp))
 
-            // Campo Correo
-            Text(
-                text = "CORREO ELECTRÓNICO",
-                modifier = Modifier.fillMaxWidth(),
-                style = MaterialTheme.typography.labelMedium,
-                fontWeight = FontWeight.Bold,
-                color = GrayText
-            )
-            OutlinedTextField(
+            SoftFocusTextField(
                 value = email,
-                onValueChange = { viewModel.email.value = it },
-                modifier = Modifier.fillMaxWidth().padding(top = 8.dp),
-                placeholder = { Text("tu@correo.com", color = Color.LightGray) },
-                shape = MaterialTheme.shapes.medium,
-                singleLine = true
+                onValueChange = onEmailChange,
+                label = stringResource(R.string.login_email_label),
+                placeholder = stringResource(R.string.login_email_placeholder),
+                enabled = !isLoading
             )
 
             Spacer(modifier = Modifier.height(24.dp))
 
-            // Campo Contraseña
-            Text(
-                text = "CONTRASEÑA",
-                modifier = Modifier.fillMaxWidth(),
-                style = MaterialTheme.typography.labelMedium,
-                fontWeight = FontWeight.Bold,
-                color = GrayText
-            )
-            OutlinedTextField(
+            SoftFocusTextField(
                 value = password,
-                onValueChange = { viewModel.password.value = it },
-                modifier = Modifier.fillMaxWidth().padding(top = 8.dp),
-                placeholder = { Text("********", color = Color.LightGray) },
+                onValueChange = onPasswordChange,
+                label = stringResource(R.string.login_password_label),
+                placeholder = stringResource(R.string.login_password_placeholder),
                 visualTransformation = if (isPasswordVisible) VisualTransformation.None else PasswordVisualTransformation(),
                 trailingIcon = {
                     IconButton(onClick = { isPasswordVisible = !isPasswordVisible }) {
                         Icon(
                             imageVector = if (isPasswordVisible) Icons.Filled.Visibility else Icons.Filled.VisibilityOff,
-                            contentDescription = "Mostrar contraseña",
-                            tint = if (isPasswordVisible) MaterialTheme.colorScheme.primary else GrayText
+                            contentDescription = stringResource(R.string.login_show_password),
+                            tint = if (isPasswordVisible) PrimaryNavy else OnSurfaceVariant
                         )
                     }
                 },
-                shape = MaterialTheme.shapes.medium,
-                singleLine = true
+                enabled = !isLoading
             )
 
             TextButton(
                 onClick = onNavigateToForgotPassword,
-                modifier = Modifier.align(Alignment.End)
+                modifier = Modifier.align(Alignment.End),
+                enabled = !isLoading
             ) {
-                Text(text = "¿Olvidaste tu contraseña?", color = GrayText, fontSize = 14.sp)
+                Text(
+                    text = stringResource(R.string.login_forgot_password),
+                    color = OnSurfaceVariant,
+                    fontSize = 14.sp
+                )
             }
 
             Spacer(modifier = Modifier.height(32.dp))
 
-            Button(
-                onClick = { viewModel.onLoginClick() },
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(56.dp),
-                shape = MaterialTheme.shapes.medium
+            PrimaryButton(
+                text = stringResource(R.string.login_button),
+                onClick = onLoginClick,
+                isLoading = isLoading,
+                modifier = Modifier.padding(bottom = 16.dp)
+            )
+
+            Spacer(modifier = Modifier.weight(1f))
+
+            Row(
+                modifier = Modifier.padding(bottom = 32.dp),
+                verticalAlignment = Alignment.CenterVertically
             ) {
-                Text(text = "Iniciar sesión", fontSize = 16.sp, fontWeight = FontWeight.Bold)
-            }
-
-            Spacer(modifier = Modifier.height(32.dp))
-
-            Row(verticalAlignment = Alignment.CenterVertically) {
-                Text(text = "¿No tienes una cuenta? ", color = GrayText)
-                TextButton(onClick = onNavigateToRegister) {
-                    Text(text = "Regístrate aquí", fontWeight = FontWeight.Bold)
+                Text(text = stringResource(R.string.login_no_account), color = OnSurfaceVariant)
+                TextButton(onClick = onNavigateToRegister, enabled = !isLoading) {
+                    Text(
+                        text = stringResource(R.string.login_register_link),
+                        fontWeight = FontWeight.Bold,
+                        color = PrimaryNavy
+                    )
                 }
             }
         }
+    }
+}
+
+@Preview(showBackground = true, showSystemUi = true)
+@Composable
+fun LoginPreview() {
+    TruequeGoAPPsmovilesTheme {
+        LoginContent(
+            email = "", password = "", isLoading = false,
+            onEmailChange = {}, onPasswordChange = {}, onLoginClick = {},
+            onNavigateBack = {}, onNavigateToRegister = {}, onNavigateToForgotPassword = {}
+        )
     }
 }

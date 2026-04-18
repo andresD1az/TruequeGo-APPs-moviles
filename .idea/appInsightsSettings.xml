@@ -10,9 +10,9 @@
               <option name="connection">
                 <ConnectionSetting>
                   <option name="appId" value="com.example.truequego_apps_moviles" />
-                  <option name="mobileSdkAppId" value="1:564516066407:android:b48e93d51f9ce2550330c2" />
-                  <option name="projectId" value="truequegoappsmoviles" />
-                  <option name="projectNumber" value="564516066407" />
+                  <option name="mobileSdkAppId" value="1:653391121323:android:38abe12fc977376562e0ee" />
+                  <option name="projectId" value="truequego-ce134" />
+                  <option name="projectNumber" value="653391121323" />
                 </ConnectionSetting>
               </option>
               <option name="signal" value="SIGNAL_UNSPECIFIED" />

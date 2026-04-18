@@ -13,34 +13,46 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 
 private val DarkColorScheme = darkColorScheme(
-    primary = DarkBlue,
-    secondary = OrangeAccent,
-    tertiary = BlueAccent,
-    background = Color(0xFF121212),
-    surface = Color(0xFF1E1E1E),
-    onPrimary = Color.White,
-    onSecondary = Color.White,
-    onBackground = Color.White,
-    onSurface = Color.White
+    primary = PrimaryNavy,
+    primaryContainer = PrimaryContainer,
+    onPrimary = OnPrimary,
+    secondary = TertiaryAccent,
+    secondaryContainer = TertiaryContainer,
+    onSecondary = OnPrimary,
+    background = OnSurface,
+    surface = OnSurfaceVariant,
+    onBackground = SurfaceContainerLowest,
+    onSurface = SurfaceContainerLowest,
+    error = Error,
+    errorContainer = ErrorContainer,
+    onError = OnError
 )
 
 private val LightColorScheme = lightColorScheme(
-    primary = DarkBlue,
-    secondary = OrangeAccent,
-    tertiary = BlueAccent,
-    background = LightBackground,
-    surface = Color.White,
-    onPrimary = Color.White,
-    onSecondary = Color.White,
-    onBackground = Color.Black,
-    onSurface = Color.Black
+    primary = PrimaryNavy,
+    primaryContainer = PrimaryContainer,
+    onPrimary = OnPrimary,
+    secondary = TertiaryAccent,
+    secondaryContainer = TertiaryContainer,
+    onSecondary = OnPrimary,
+    background = SurfaceContainerLow,
+    surface = SurfaceContainerLowest,
+    onBackground = OnSurface,
+    onSurface = OnSurface,
+    surfaceVariant = SurfaceContainer,
+    onSurfaceVariant = OnSurfaceVariant,
+    outline = Outline,
+    outlineVariant = OutlineVariant,
+    error = Error,
+    errorContainer = ErrorContainer,
+    onError = OnError
 )
 
 @Composable
 fun TruequeGoAPPsmovilesTheme(
     darkTheme: Boolean = isSystemInDarkTheme(),
     // Dynamic color is available on Android 12+
-    dynamicColor: Boolean = true,
+    dynamicColor: Boolean = false, // Disable dynamic colors to enforce the brand colors
     content: @Composable () -> Unit
 ) {
     val colorScheme = when {
@@ -48,7 +60,6 @@ fun TruequeGoAPPsmovilesTheme(
             val context = LocalContext.current
             if (darkTheme) dynamicDarkColorScheme(context) else dynamicLightColorScheme(context)
         }
-
         darkTheme -> DarkColorScheme
         else -> LightColorScheme
     }

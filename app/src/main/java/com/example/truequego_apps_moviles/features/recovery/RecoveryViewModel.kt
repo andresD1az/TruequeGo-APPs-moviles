@@ -4,6 +4,7 @@ import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.truequego_apps_moviles.domain.repository.AuthRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.asSharedFlow
@@ -11,7 +12,9 @@ import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
-class RecoveryViewModel @Inject constructor() : ViewModel() {
+class RecoveryViewModel @Inject constructor(
+    private val authRepository: AuthRepository
+) : ViewModel() {
 
     // Pantalla de olvido de contraseña
     var email = mutableStateOf("")
@@ -24,15 +27,24 @@ class RecoveryViewModel @Inject constructor() : ViewModel() {
     private val _recoveryResult = MutableSharedFlow<String>()
     val recoveryResult = _recoveryResult.asSharedFlow()
 
+    private val _isLoading = mutableStateOf(false)
+    val isLoading get() = _isLoading
+
     fun onSendRecoveryLink() {
+        if (email.value.isBlank() || !android.util.Patterns.EMAIL_ADDRESS.matcher(email.value.trim()).matches()) {
+            viewModelScope.launch { _recoveryResult.emit("Ingresa un correo electrónico válido") }
+            return
+        }
+
+        _isLoading.value = true
         viewModelScope.launch {
-            when {
-                email.value.isBlank() ->
-                    _recoveryResult.emit("Ingresa tu correo electrónico")
-                !android.util.Patterns.EMAIL_ADDRESS.matcher(email.value.trim()).matches() ->
-                    _recoveryResult.emit("Correo electrónico no válido")
-                else ->
-                    _recoveryResult.emit("Enlace enviado a ${email.value.trim()}. Revisa tu bandeja.")
+            authRepository.sendPasswordResetEmail(email.value.trim()).collect { result ->
+                _isLoading.value = false
+                result.onSuccess {
+                    _recoveryResult.emit("RECOVERY_EMAIL_SENT")
+                }.onFailure {
+                    _recoveryResult.emit(it.message ?: "Error al enviar el enlace")
+                }
             }
         }
     }
@@ -47,8 +59,11 @@ class RecoveryViewModel @Inject constructor() : ViewModel() {
                     _recoveryResult.emit("La contraseña debe tener mínimo 8 caracteres")
                 newPassword.value != confirmNewPassword.value ->
                     _recoveryResult.emit("Las contraseñas no coinciden")
-                else ->
-                    _recoveryResult.emit("Contraseña restablecida con éxito")
+                else -> {
+                    // Firebase maneja el restablecimiento mediante el enlace enviado al correo.
+                    // Esta pantalla de código manual es demostrativa en esta etapa si no se usa un backend propio.
+                    _recoveryResult.emit("Funcionalidad de código pendiente de integración con backend")
+                }
             }
         }
     }
